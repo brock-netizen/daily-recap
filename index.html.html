@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1b3026">
+<title>Owl Eye Landscaping — Daily Recap</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>🦉</text></svg>">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#263e32;--hdr:#1b3026;--alt:#1e3528;--gold:#dda138;--gold-dim:#b8862f;
+  --border:#4a7a5c;--white:#fff;--muted:#bfbfbf;--input-bg:#1b3026;
+  --danger:#e05555;--success:#5cb85c;--font:'Helvetica Neue',Helvetica,Arial,sans-serif;
+}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--white);font-family:var(--font);-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh}
+input,textarea,select,button{font-family:var(--font)}
+.page{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+
+/* Header */
+.top-bar{background:var(--hdr);border-bottom:2px solid var(--gold);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.top-bar .brand{font-weight:700;font-size:13px;color:var(--gold);letter-spacing:1px}
+.top-bar .sub{color:var(--muted);font-size:12px;margin-left:12px}
+.top-bar .step-count{color:var(--muted);font-size:11px}
+
+/* Progress */
+.progress-track{height:3px;background:var(--hdr)}
+.progress-fill{height:100%;background:var(--gold);transition:width .4s ease;border-radius:0 2px 2px 0}
+
+/* Step pills */
+.pills{display:flex;gap:6px;padding:12px 20px;overflow-x:auto;background:rgba(27,48,38,.55);-webkit-overflow-scrolling:touch}
+.pills::-webkit-scrollbar{display:none}
+.pill{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;cursor:pointer;white-space:nowrap;transition:all .2s}
+.pill.active{border-color:var(--gold);background:rgba(221,161,56,.13);color:var(--gold);font-weight:700}
+
+/* Content */
+.content{max-width:600px;margin:0 auto;padding:20px 20px 130px;width:100%;flex:1}
+
+/* Bottom nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--hdr);border-top:1px solid var(--border);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;z-index:100}
+.btn-back,.btn-next,.btn-submit{padding:10px 24px;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;transition:all .2s}
+.btn-back{border:1.5px solid var(--gold);background:transparent;color:var(--gold)}
+.btn-back:disabled{border-color:var(--border);color:var(--border);opacity:.4;cursor:default}
+.btn-next{border:none;background:var(--gold);color:var(--hdr);font-weight:700;box-shadow:0 2px 8px rgba(221,161,56,.27)}
+.btn-submit{border:none;background:var(--gold);color:var(--hdr);font-weight:700;font-size:15px;padding:10px 32px;box-shadow:0 2px 12px rgba(221,161,56,.4);letter-spacing:.5px}
+.btn-submit:disabled{background:var(--gold-dim);cursor:wait}
+
+/* Form elements */
+.field{margin-bottom:14px}
+.label{display:block;font-size:13px;font-weight:700;color:var(--gold);margin-bottom:6px}
+.label .req{color:var(--danger);margin-left:4px}
+.input,.textarea,.select{width:100%;padding:10px 12px;background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--white);font-size:14px;outline:none;transition:border-color .2s}
+.input:focus,.textarea:focus,.select:focus{border-color:var(--gold)}
+.textarea{resize:vertical;min-height:72px}
+.select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23dda138' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;cursor:pointer}
+.select option{background:var(--hdr);color:var(--white)}
+
+/* Yes/No */
+.yesno{display:flex;gap:10px}
+.yesno-btn{flex:1;padding:10px 0;border-radius:6px;border:1.5px solid var(--border);background:var(--input-bg);color:var(--muted);font-size:14px;cursor:pointer;transition:all .2s;text-align:center}
+.yesno-btn.active{border-color:var(--gold);background:rgba(221,161,56,.13);color:var(--gold);font-weight:700}
+
+/* Score circles */
+.score-btn{width:34px;height:34px;border-radius:50%;border:2px solid var(--border);background:transparent;color:var(--muted);font-weight:700;font-size:14px;cursor:pointer;transition:all .15s}
+.score-btn.active{border-color:var(--gold);background:var(--gold);color:var(--hdr)}
+
+/* Photo upload */
+.photo-zone{border:2px dashed var(--border);border-radius:8px;padding:20px 16px;text-align:center;cursor:pointer;background:var(--input-bg);transition:border-color .2s}
+.photo-zone:hover,.photo-zone:active{border-color:var(--gold)}
+.photo-thumbs{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.photo-thumb{position:relative;width:64px;height:64px}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;border-radius:6px;border:1px solid var(--border)}
+.photo-remove{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;border:none;background:var(--danger);color:#fff;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* Team card */
+.team-card{padding:12px;border-bottom:1px solid var(--border);background:var(--input-bg);border-radius:6px;margin-bottom:8px}
+.team-name{font-weight:700;font-size:14px;margin-bottom:10px}
+.score-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.score-label{color:var(--muted);font-size:12px;font-weight:600;width:80px}
+.score-group{display:flex;gap:6px}
+
+/* Culture row */
+.culture-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid var(--border)}
+.culture-row .name{flex:1;font-weight:600;font-size:13px}
+.culture-row label{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;font-weight:600}
+.culture-row input[type=checkbox]{accent-color:var(--gold);width:18px;height:18px;cursor:pointer}
+
+/* Misc */
+.gold-rule{height:2px;background:var(--gold);margin:12px 0 16px;border-radius:1px}
+.thin-rule{height:1px;background:var(--border);margin:8px 0 12px}
+.section-title{font-size:22px;font-weight:700;color:var(--gold);letter-spacing:.5px}
+.sub-title{font-size:15px;font-weight:700;color:var(--gold);margin:16px 0 8px}
+.note{font-size:12px;color:var(--muted)}
+.info-box{margin-top:12px;padding:10px 14px;border-radius:6px;border:1px solid var(--border);background:var(--input-bg)}
+.info-box p{font-size:12px;color:var(--muted);margin:0 0 6px}
+.info-box p:last-child{margin-bottom:0}
+
+/* Setup screen */
+.setup-wrap{min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg)}
+.setup-box{max-width:480px;width:100%}
+.setup-box .brand-big{font-weight:700;font-size:15px;color:var(--gold);letter-spacing:1.5px}
+.setup-box h2{color:var(--white);font-size:22px;margin:12px 0 4px}
+.setup-box .desc{color:var(--muted);font-size:13px}
+.setup-btn{width:100%;padding:12px;border-radius:8px;border:none;background:var(--gold);color:var(--hdr);font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 2px 12px rgba(221,161,56,.27)}
+.skip-btn{display:block;margin:16px auto 0;padding:8px 20px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer}
+.instructions{margin-top:24px;padding:14px 16px;border-radius:8px;background:var(--input-bg);border:1px solid var(--border)}
+.instructions p.title{color:var(--gold);font-size:13px;font-weight:700;margin:0 0 8px}
+.instructions ol{color:var(--muted);font-size:12px;line-height:1.8;margin:0;padding-left:18px}
+.instructions ol b{color:var(--white)}
+
+/* Success */
+.success-wrap{min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;background:var(--bg)}
+.success-icon{font-size:56px;margin-bottom:16px}
+.success-wrap h2{color:var(--gold);font-size:24px;margin:0 0 8px}
+.success-wrap .msg{color:var(--muted);font-size:14px}
+.success-wrap .sheets-confirm{color:var(--success);font-size:12px;margin-top:4px}
+.btn-another{margin-top:20px;padding:12px 32px;border-radius:8px;border:2px solid var(--gold);background:transparent;color:var(--gold);font-weight:700;font-size:14px;cursor:pointer}
+
+.error-text{color:var(--danger);font-size:12px;margin-top:6px}
+.submit-error{color:var(--danger);font-size:11px;flex:1;text-align:center}
+
+/* Alt member box */
+.alt-box{padding:12px;background:var(--input-bg);border-radius:6px;margin-bottom:8px;border:1px solid var(--border)}
+.alt-box .alt-label{font-size:12px;color:var(--gold);font-weight:700;margin-bottom:8px}
+
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<!-- ═══════ SETUP SCREEN ═══════ -->
+<div id="setup-screen" class="setup-wrap">
+  <div class="setup-box" style="text-align:center">
+    <div class="brand-big">OWL EYE LANDSCAPING</div>
+    <h2>Connect to Google Sheets</h2>
+    <p class="desc">One-time setup — paste your Apps Script Web App URL below</p>
+    <div class="gold-rule"></div>
+    <div class="field" style="text-align:left">
+      <label class="label">Google Apps Script Web App URL</label>
+      <input type="url" class="input" id="sheets-url" placeholder="https://script.google.com/macros/s/...../exec">
+      <p class="error-text hidden" id="setup-error"></p>
+    </div>
+    <button class="setup-btn" onclick="saveSetup()">Save & Start Using Form</button>
+    <div class="instructions">
+      <p class="title">Setup Instructions:</p>
+      <ol>
+        <li>Create a new Google Sheet</li>
+        <li>Name the first tab <b>Submissions</b></li>
+        <li>Go to <b>Extensions → Apps Script</b></li>
+        <li>Delete any existing code and paste the script file provided</li>
+        <li>Click <b>Deploy → New deployment</b></li>
+        <li>Type: <b>Web app</b> | Execute as: <b>Me</b> | Access: <b>Anyone</b></li>
+        <li>Copy the URL and paste it above</li>
+      </ol>
+    </div>
+    <button class="skip-btn" onclick="skipSetup()">Skip for now (submissions won't be saved)</button>
+  </div>
+</div>
+
+<!-- ═══════ MAIN FORM ═══════ -->
+<div id="form-screen" class="page hidden">
+  <div class="top-bar">
+    <div><span class="brand">OWL EYE LANDSCAPING</span><span class="sub">Daily Recap</span></div>
+    <div class="step-count" id="step-count">Step 1 / 7</div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:14.28%"></div></div>
+  <div class="pills" id="pills"></div>
+  <div class="content" id="content"></div>
+  <div class="bottom-nav">
+    <button class="btn-back" id="btn-back" onclick="prevStep()">← Back</button>
+    <span class="submit-error hidden" id="submit-error"></span>
+    <button class="btn-next" id="btn-next" onclick="nextStep()">Next →</button>
+    <button class="btn-submit hidden" id="btn-submit" onclick="submitForm()">✓ Submit</button>
+  </div>
+</div>
+
+<!-- ═══════ SUCCESS SCREEN ═══════ -->
+<div id="success-screen" class="success-wrap hidden">
+  <div>
+    <div class="success-icon">✅</div>
+    <h2>Recap Submitted</h2>
+    <p class="msg" id="success-msg"></p>
+    <p class="sheets-confirm hidden" id="sheets-confirm">✓ Sent to Google Sheets</p>
+    <button class="btn-another" onclick="resetForm()">Submit Another Recap</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let sheetsUrl = null;
+let currentStep = 0;
+const STEPS = ["Project Info","Summary Update","Damages","Support","Customer","Team","Timecard"];
+const CREW_DALTON = ["Phoenix Daly","Isaac Alford"];
+const CREW_ANTHONY = ["Bryce Irving","Tyler Trotta","Alister Hall"];
+const ALL_CREW = [...CREW_DALTON,...CREW_ANTHONY];
+const FAILURE_REASONS = ["Weather","Team","Equipment Failure","Unforeseen Circumstances","Material Delays","Leadership Failure","Other"];
+
+let formData = {};
+let teamScores = {};
+let altMembers = [{name:"",pace:null,quality:null,notes:""},{name:"",pace:null,quality:null,notes:""}];
+
+function initTeamScores(){
+  ALL_CREW.forEach(m=>{teamScores[m]={enjoyment:null,pace:null,quality:null,notes:"",award:false,strike:false}});
+}
+initTeamScores();
+
+// ═══════════════════════════════════════════
+// SETUP
+// ═══════════════════════════════════════════
+function saveSetup(){
+  const url=document.getElementById("sheets-url").value.trim();
+  const err=document.getElementById("setup-error");
+  if(!url){err.textContent="Please paste your Google Apps Script URL";err.classList.remove("hidden");return}
+  if(!url.includes("script.google.com")){err.textContent="That doesn't look right. Should start with https://script.google.com/...";err.classList.remove("hidden");return}
+  sheetsUrl=url;
+  try{localStorage.setItem("owl_sheets_url",url)}catch(e){}
+  showForm();
+}
+function skipSetup(){sheetsUrl="SKIP";showForm()}
+function showForm(){
+  document.getElementById("setup-screen").classList.add("hidden");
+  document.getElementById("form-screen").classList.remove("hidden");
+  buildPills();
+  renderStep();
+}
+
+// Check for saved URL
+try{
+  const saved=localStorage.getItem("owl_sheets_url");
+  if(saved){sheetsUrl=saved;document.addEventListener("DOMContentLoaded",()=>showForm())}
+}catch(e){}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function buildPills(){
+  const c=document.getElementById("pills");
+  c.innerHTML=STEPS.map((s,i)=>`<button class="pill${i===currentStep?" active":""}" onclick="goStep(${i})">${s}</button>`).join("");
+}
+function goStep(i){currentStep=i;renderStep()}
+function nextStep(){if(currentStep<STEPS.length-1){currentStep++;renderStep()}}
+function prevStep(){if(currentStep>0){currentStep--;renderStep()}}
+
+function renderStep(){
+  buildPills();
+  document.getElementById("step-count").textContent=`Step ${currentStep+1} / ${STEPS.length}`;
+  document.getElementById("progress-fill").style.width=`${((currentStep+1)/STEPS.length)*100}%`;
+  const back=document.getElementById("btn-back");
+  back.disabled=currentStep===0;
+  const isLast=currentStep===STEPS.length-1;
+  document.getElementById("btn-next").classList.toggle("hidden",isLast);
+  document.getElementById("btn-submit").classList.toggle("hidden",!isLast);
+  document.getElementById("submit-error").classList.add("hidden");
+  const c=document.getElementById("content");
+  switch(currentStep){
+    case 0:c.innerHTML=renderProjectInfo();break;
+    case 1:c.innerHTML=renderSummary();break;
+    case 2:c.innerHTML=renderDamages();break;
+    case 3:c.innerHTML=renderSupport();break;
+    case 4:c.innerHTML=renderCustomer();break;
+    case 5:c.innerHTML=renderTeam();break;
+    case 6:c.innerHTML=renderTimecard();break;
+  }
+  c.scrollTop=0;
+  window.scrollTo(0,0);
+}
+
+// ═══════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════
+function val(key){return formData[key]||""}
+function setVal(key,v){formData[key]=v}
+function fieldInput(id,label,placeholder,required){
+  return `<div class="field"><label class="label">${label}${required?'<span class="req">*</span>':""}</label><input class="input" id="${id}" value="${escHtml(val(id))}" placeholder="${placeholder||""}" onchange="setVal('${id}',this.value)" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"></div>`;
+}
+function fieldTextarea(id,label,placeholder,required,rows){
+  return `<div class="field"><label class="label">${label}${required?'<span class="req">*</span>':""}</label><textarea class="textarea" id="${id}" rows="${rows||3}" placeholder="${placeholder||""}" onchange="setVal('${id}',this.value)" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'">${escHtml(val(id))}</textarea></div>`;
+}
+function fieldSelect(id,label,options,placeholder,required){
+  const opts=options.map(o=>`<option value="${o}"${val(id)===o?" selected":""}>${o}</option>`).join("");
+  return `<div class="field"><label class="label">${label}${required?'<span class="req">*</span>':""}</label><select class="select" id="${id}" onchange="setVal('${id}',this.value)"><option value="" disabled ${val(id)?'':'selected'}>${placeholder||"Select..."}</option>${opts}</select></div>`;
+}
+function fieldYesNo(id,label,required){
+  const v=val(id);
+  return `<div class="field"><label class="label">${label}${required?'<span class="req">*</span>':""}</label><div class="yesno"><button class="yesno-btn${v==="Yes"?" active":""}" onclick="setVal('${id}','Yes');renderStep()">Yes</button><button class="yesno-btn${v==="No"?" active":""}" onclick="setVal('${id}','No');renderStep()">No</button></div></div>`;
+}
+function photoUpload(label,desc){
+  const uid="photo_"+label.replace(/\s/g,"_");
+  return `<div class="field"><label class="label">${label}</label>${desc?`<p class="note" style="margin-bottom:8px">${desc}</p>`:""}<div class="photo-zone" onclick="document.getElementById('${uid}').click()"><input type="file" accept="image/*" capture="environment" multiple id="${uid}" style="display:none" onchange="handlePhotos(this,'${uid}_thumbs')"><div style="font-size:28px;margin-bottom:4px">📷</div><div class="note">Tap to upload or take a photo</div></div><div class="photo-thumbs" id="${uid}_thumbs"></div></div>`;
+}
+function escHtml(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+
+window.handlePhotos=function(input,thumbsId){
+  const container=document.getElementById(thumbsId);
+  Array.from(input.files).forEach(f=>{
+    const url=URL.createObjectURL(f);
+    const div=document.createElement("div");div.className="photo-thumb";
+    div.innerHTML=`<img src="${url}" alt="${f.name}"><button class="photo-remove" onclick="this.parentElement.remove()">✕</button>`;
+    container.appendChild(div);
+  });
+  input.value="";
+};
+
+// Score button helper
+function scoreBtn(member,cat,v){
+  const cur=teamScores[member]?.[cat];
+  return `<button class="score-btn${cur===v?" active":""}" onclick="setScore('${member}','${cat}',${v})">${v}</button>`;
+}
+window.setScore=function(m,c,v){
+  if(!teamScores[m])teamScores[m]={enjoyment:null,pace:null,quality:null,notes:"",award:false,strike:false};
+  teamScores[m][c]=v;
+  renderStep();
+};
+window.setTeamNotes=function(m,v){teamScores[m].notes=v};
+window.setTeamAward=function(m,v){teamScores[m].award=v};
+window.setTeamStrike=function(m,v){teamScores[m].strike=v};
+
+// Alt member helpers
+window.setAltName=function(i,v){altMembers[i].name=v};
+window.setAltScore=function(i,cat,v){altMembers[i][cat]=v;renderStep()};
+window.setAltNotes=function(i,v){altMembers[i].notes=v};
+
+// ═══════════════════════════════════════════
+// STEP RENDERERS
+// ═══════════════════════════════════════════
+function renderProjectInfo(){
+  return `<h2 class="section-title">DAILY RECAP FORM</h2><p class="note" style="margin:4px 0 0">End-of-Day Field Report — Owl Eye Landscaping</p><div class="gold-rule"></div>`
+    +fieldSelect("projectManager","Project Manager",["Anthony","Dalton"],"Select Project Manager",true)
+    +fieldInput("project","Project","e.g. Beaudoin — 7031 Canyon Trek Trl",true);
+}
+
+function renderSummary(){
+  let h=`<h2 class="section-title">SUMMARY UPDATE</h2><div class="gold-rule"></div>`
+    +fieldTextarea("dailyGoal","Copy & Paste Daily Goal","Paste today's goal here...",true,4)
+    +fieldYesNo("goalAchieved","Daily Goal Achievement",true);
+  if(val("goalAchieved")==="No"){
+    h+=fieldTextarea("goalFailureNotes","Goal Failure Notes","Explain what happened...",false,3)
+      +fieldSelect("goalFailureReason","Goal Failure Reason",FAILURE_REASONS,"Select reason");
+  }
+  h+=`<div class="thin-rule"></div><h3 class="sub-title">Required Photos</h3>`
+    +photoUpload("Daily Goal Photos","Take a picture of the items on the daily goal list")
+    +photoUpload("Clean Up & Tools Photos","Take a picture of tools/toolbox and driveway/road")
+    +photoUpload("Work Zone Photo","Take a picture of the work zone")
+    +`<div class="thin-rule"></div>`
+    +fieldYesNo("completionAlert","Completion Alert");
+  return h;
+}
+
+function renderDamages(){
+  let h=`<h2 class="section-title">DAMAGES</h2><div class="gold-rule"></div>`
+    +fieldYesNo("hasDamage","Damage (Customer or Company Property)",true);
+  if(val("hasDamage")==="Yes"){
+    h+=fieldTextarea("damageNotes","Damage Notes","Describe what happened, where, and severity...",true,4);
+  }
+  h+=`<div class="info-box"><p>⚠️ If damage occurred, notify Brock immediately. Do not wait until end of day.</p></div>`;
+  return h;
+}
+
+function renderSupport(){
+  let h=`<h2 class="section-title">SUPPORT</h2><div class="gold-rule"></div>`
+    +fieldYesNo("materialRequest","Material Request");
+  if(val("materialRequest")==="Yes")h+=fieldTextarea("materialNotes","Material Notes","What is needed, quantity, urgency...");
+  h+=fieldYesNo("heavyEquipRequest","Heavy Equipment Request");
+  if(val("heavyEquipRequest")==="Yes")h+=fieldTextarea("heavyEquipNotes","Heavy Equipment Notes","What equipment, when needed...");
+  h+=fieldYesNo("toolRequest","Tool Request");
+  if(val("toolRequest")==="Yes")h+=fieldTextarea("toolNotes","Tool Notes","What tools, condition of current tools...");
+  h+=`<div class="thin-rule"></div>`+fieldTextarea("improvementFeedback","Improvement Feedback","Suggestions for workflow, process, or efficiency...",false,3);
+  return h;
+}
+
+function renderCustomer(){
+  let h=`<h2 class="section-title">CUSTOMER</h2><div class="gold-rule"></div>`
+    +fieldYesNo("customerQuestions","Customer Unanswered Questions");
+  if(val("customerQuestions")==="Yes")h+=fieldTextarea("questionNotes","Question Notes","What did the customer ask?");
+  h+=fieldYesNo("customerDissatisfied","Customer Dissatisfaction");
+  if(val("customerDissatisfied")==="Yes")h+=fieldTextarea("dissatisfactionNotes","Dissatisfaction Notes","What is the concern? How was it addressed?");
+  h+=`<div class="info-box"><p>⚠️ If the customer is visibly unhappy or raises a concern you cannot resolve, contact Brock or Anthony before leaving the site.</p></div>`;
+  return h;
+}
+
+function renderTeamMember(m){
+  const s=teamScores[m]||{};
+  return `<div class="team-card"><div class="team-name">${m}</div>`
+    +["Enjoyment","Pace","Quality"].map(cat=>`<div class="score-row"><span class="score-label">${cat}</span><div class="score-group">${[1,2,3].map(v=>scoreBtn(m,cat.toLowerCase(),v)).join("")}</div></div>`).join("")
+    +`<input class="input" style="font-size:12px;padding:8px;margin-top:4px" placeholder="Performance notes..." value="${escHtml(s.notes||"")}" onchange="setTeamNotes('${m}',this.value)"></div>`;
+}
+
+function renderCultureRow(m){
+  const s=teamScores[m]||{};
+  return `<div class="culture-row"><div class="name">${m}</div><label><input type="checkbox" ${s.award?"checked":""} onchange="setTeamAward('${m}',this.checked)"><span style="color:var(--success)">Award</span></label><label><input type="checkbox" ${s.strike?"checked":""} onchange="setTeamStrike('${m}',this.checked)"><span style="color:var(--danger)">Strike</span></label></div>`;
+}
+
+function renderTeam(){
+  let h=`<h2 class="section-title">TEAM</h2><div class="gold-rule"></div><p class="note" style="margin-bottom:12px">Score each team member 1–3. &nbsp; 1 = Below Standard &nbsp;|&nbsp; 2 = Meets Standard &nbsp;|&nbsp; 3 = Exceeds Standard</p>`;
+  h+=`<h3 class="sub-title">Team Assessment | Dalton's Crew</h3>`;
+  CREW_DALTON.forEach(m=>{h+=renderTeamMember(m)});
+  h+=`<h3 class="sub-title" style="font-size:13px">Culture Assessment | Dalton's Crew</h3>`;
+  CREW_DALTON.forEach(m=>{h+=renderCultureRow(m)});
+  h+=`<div style="height:20px"></div><h3 class="sub-title">Team Assessment | Anthony's Crew</h3>`;
+  CREW_ANTHONY.forEach(m=>{h+=renderTeamMember(m)});
+  h+=`<h3 class="sub-title" style="font-size:13px">Culture Assessment | Anthony's Crew</h3>`;
+  CREW_ANTHONY.forEach(m=>{h+=renderCultureRow(m)});
+  h+=`<div class="thin-rule"></div>`+fieldYesNo("hasAlternate","Alternate Team Member");
+  if(val("hasAlternate")==="Yes"){
+    h+=`<h3 class="sub-title" style="font-size:13px">Alternate Team Member Assessment</h3>`;
+    const opts=[...ALL_CREW,"Other"];
+    altMembers.forEach((alt,i)=>{
+      const selOpts=opts.map(o=>`<option value="${o}"${alt.name===o?" selected":""}>${o}</option>`).join("");
+      h+=`<div class="alt-box"><div class="alt-label">Crew Member #${i+1}</div><div class="field"><label class="label">Name</label><select class="select" onchange="setAltName(${i},this.value)"><option value="" disabled ${alt.name?'':'selected'}>Select crew member</option>${selOpts}</select></div>`
+        +["Pace","Quality"].map(cat=>{
+          return `<div class="score-row"><span class="score-label">${cat}</span><div class="score-group">${[1,2,3].map(v=>`<button class="score-btn${alt[cat.toLowerCase()]===v?" active":""}" onclick="setAltScore(${i},'${cat.toLowerCase()}',${v})">${v}</button>`).join("")}</div></div>`;
+        }).join("")
+        +`<input class="input" style="font-size:12px;padding:8px" placeholder="Performance notes..." value="${escHtml(alt.notes)}" onchange="setAltNotes(${i},this.value)"></div>`;
+    });
+  }
+  return h;
+}
+
+function renderTimecard(){
+  return `<h2 class="section-title">TIMECARD CONFIRMATION</h2><div class="gold-rule"></div>`
+    +fieldYesNo("timecardSubmitted","LMN Timecard is Submitted",true)
+    +`<div class="info-box"><p>• Timecard must be submitted in LMN before leaving the job site every day. No exceptions.</p><p>• Verify all crew hours are logged accurately — start time, end time, break time.</p><p>• If LMN is down or unavailable, text hours directly to Brock before leaving.</p></div>`;
+}
+
+// ═══════════════════════════════════════════
+// SUBMIT
+// ═══════════════════════════════════════════
+async function submitForm(){
+  const btn=document.getElementById("btn-submit");
+  const errEl=document.getElementById("submit-error");
+  
+  // Build payload
+  const payload={...formData,teamScores,altMembers};
+  
+  if(sheetsUrl&&sheetsUrl!=="SKIP"){
+    btn.disabled=true;btn.textContent="Sending...";
+    errEl.classList.add("hidden");
+    try{
+      await fetch(sheetsUrl,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+      showSuccess(true);
+    }catch(e){
+      errEl.textContent="Failed to send. Check your URL.";
+      errEl.classList.remove("hidden");
+      btn.disabled=false;btn.textContent="✓ Submit";
+    }
+  }else{
+    showSuccess(false);
+  }
+}
+
+function showSuccess(sentToSheets){
+  document.getElementById("form-screen").classList.add("hidden");
+  document.getElementById("success-screen").classList.remove("hidden");
+  const pm=formData.projectManager||"";
+  const proj=formData.project||"this project";
+  document.getElementById("success-msg").innerHTML=`${pm?pm+"'s":""} daily recap for <b style="color:var(--white)">${escHtml(proj)}</b> has been recorded.`;
+  document.getElementById("sheets-confirm").classList.toggle("hidden",!sentToSheets);
+}
+
+function resetForm(){
+  formData={};
+  initTeamScores();
+  altMembers=[{name:"",pace:null,quality:null,notes:""},{name:"",pace:null,quality:null,notes:""}];
+  currentStep=0;
+  document.getElementById("success-screen").classList.add("hidden");
+  document.getElementById("form-screen").classList.remove("hidden");
+  const btn=document.getElementById("btn-submit");btn.disabled=false;btn.textContent="✓ Submit";
+  renderStep();
+}
+</script>
+</body>
+</html>
